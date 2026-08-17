@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigation } from '../context/NavigationContext';
 import { CircleDotSculpture } from '../components/CircleDotSculpture';
 import { CustomCursor } from '../components/CustomCursor';
+import { LazyImage } from '../components/LazyImage';
 import { ArrowUpRight, ArrowDown, ArrowRight } from 'lucide-react';
 import { motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { gsap } from 'gsap';
@@ -87,7 +88,7 @@ const StackingProjectCard: React.FC<{
 
         {/* Large Immersive Image Banner Preview */}
         <div className="relative z-10 w-full h-56 sm:h-72 md:h-[340px] my-5 rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200 dark:border-[#222222] group-hover:border-[#E30613]/50 transition-colors shadow-lg">
-          <img
+          <LazyImage
             src={project.image}
             alt={project.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95 dark:brightness-90 group-hover:brightness-100"
@@ -257,7 +258,7 @@ const StackedWhyCard: React.FC<{
         onMouseLeave={handleMouseLeave}
         className="group relative aspect-[4/3] w-full max-w-2xl overflow-hidden rounded-[28px] border border-white/10 bg-[#111315] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
       >
-        <img
+        <LazyImage
           src={card.image}
           alt={card.title}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -833,20 +834,22 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Stacked Cards Container */}
-        <div className="relative flex flex-col gap-12 min-h-[200vh]">
-          {[
-            { num: '01', title: 'BUSINESS-FIRST', desc: 'Design decisions start with the objective.', icon: '→', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80' },
-            { num: '02', title: 'CONNECTED', desc: 'Brand, product, digital and growth work together.', icon: '↔', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80' },
-            { num: '03', title: 'DESIGN-LED', desc: 'Strategy and creativity continue through development.', icon: '⚡', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80' },
-            { num: '04', title: 'BUILT TO EVOLVE', desc: 'We create systems, not one-time visuals.', icon: '⚙', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80' },
-          ].map((why, index, arr) => (
-            <StackedWhyCard
-              key={why.title}
-              card={why}
-              index={index}
-              totalCards={arr.length}
-            />
-          ))}
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+            {[
+              { num: '01', title: 'BUSINESS-FIRST', desc: 'Design decisions start with the objective.', icon: '→', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80' },
+              { num: '02', title: 'CONNECTED', desc: 'Brand, product, digital and growth work together.', icon: '↔', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80' },
+              { num: '03', title: 'DESIGN-LED', desc: 'Strategy and creativity continue through development.', icon: '⚡', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80' },
+              { num: '04', title: 'BUILT TO EVOLVE', desc: 'We create systems, not one-time visuals.', icon: '⚙', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80' },
+            ].map((why, index, arr) => (
+              <StackedWhyCard
+                key={why.title}
+                card={why}
+                index={index}
+                totalCards={arr.length}
+              />
+            ))}
+          </div>
         </div>
       </section>
 

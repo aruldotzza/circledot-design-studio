@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigation } from '../context/NavigationContext';
+import { LazyImage } from '../components/LazyImage';
 import { ArrowUpRight, Filter, X } from 'lucide-react';
 
 interface ConceptProject {
@@ -162,7 +163,7 @@ export const WorkPage: React.FC = () => {
               <div>
                 {/* Top Image Banner */}
                 <div className="w-full h-52 sm:h-60 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#222222] relative group-hover:border-[#E30613]/50 transition-colors mb-6">
-                  <img
+                  <LazyImage
                     src={p.image}
                     alt={p.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95 dark:brightness-90 group-hover:brightness-100"

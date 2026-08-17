@@ -51,7 +51,7 @@ export const Footer: React.FC = () => {
           
           {/* Left Card */}
           <div className="footer-left">
-            <video className="footer-left-video" autoPlay muted loop playsInline preload="auto">
+            <video className="footer-left-video" autoPlay muted loop playsInline preload="metadata" poster="/Logo/Logo mockup.png">
               <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260503_104800_bc43ae09-f494-43e3-97d7-2f8c1692cfd7.mp4" type="video/mp4" />
             </video>
 
