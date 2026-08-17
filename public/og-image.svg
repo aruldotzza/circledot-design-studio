@@ -1,0 +1,11 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#F8F9FA"/>
+  <rect x="60" y="60" width="1080" height="510" rx="36" fill="#0C0C0C"/>
+  <rect x="102" y="102" width="140" height="140" rx="24" fill="#E30613"/>
+  <circle cx="172" cy="172" r="28" fill="#F8F9FA"/>
+  <circle cx="172" cy="172" r="11" fill="#E30613"/>
+  <text x="102" y="318" fill="#F8F9FA" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">Circle Dot</text>
+  <text x="102" y="392" fill="#C8CDD3" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="500">Design Studio</text>
+  <text x="102" y="462" fill="#F8F9FA" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="400">Branding • Product Design • Development • Growth</text>
+  <rect x="102" y="500" width="228" height="12" rx="6" fill="#E30613"/>
+</svg>
