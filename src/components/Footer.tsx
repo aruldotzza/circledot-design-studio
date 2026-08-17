@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '../context/NavigationContext';
+import { useTheme } from '../context/ThemeContext';
 
 export const Footer: React.FC = () => {
   const { navigateTo, openEnquiryModal } = useNavigation();
+  const { isDark } = useTheme();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -43,7 +45,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full bg-white transition-colors duration-300">
+    <footer className={isDark ? 'w-full bg-[#0C0C0C] transition-colors duration-300' : 'w-full bg-white transition-colors duration-300'}>
       <section className="footer-section">
         <div className="footer-wrapper">
           

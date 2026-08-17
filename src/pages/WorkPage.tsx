@@ -109,11 +109,11 @@ export const WorkPage: React.FC = () => {
     : projects.filter((p) => p.capability === selectedFilter || p.services.some(s => s.toUpperCase().includes(selectedFilter.split(' ')[0])));
 
   return (
-    <div className="w-full bg-[#F8F9FA] dark:bg-[#0C0C0C] text-gray-900 dark:text-[#F3F4EF] pt-32 pb-24 transition-colors duration-300">
+    <div className="w-full bg-[#F8F9FA] dark:bg-[#0C0C0C] text-gray-900 dark:text-[#F3F4EF] pt-24 pb-24 transition-colors duration-300">
       {/* HERO SECTION */}
-      <section className="px-6 md:px-10 mb-12">
+      <section className="px-6 md:px-10 pb-2">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-0">
             <div>
               <span className="text-xs font-mono tracking-widest text-[#E30613] uppercase block mb-3 font-bold">
                 CASE STUDIES
@@ -129,21 +129,23 @@ export const WorkPage: React.FC = () => {
           </div>
 
           {/* FILTER BAR */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-4 border-b border-gray-200 dark:border-[#222222]">
-            <Filter className="w-4 h-4 text-gray-500 dark:text-[#A5A8A1] mr-2 shrink-0" />
-            {filters.map((f) => (
-              <button
-                key={f}
-                onClick={() => setSelectedFilter(f)}
-                className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-                  selectedFilter === f
-                    ? 'bg-[#E30613] text-white font-bold'
-                    : 'bg-white dark:bg-[#141414] text-gray-700 dark:text-[#A5A8A1] border border-gray-200 dark:border-[#222222] hover:text-gray-900 dark:hover:text-gray-900 dark:text-[#F3F4EF]'
-                }`}
-              >
-                {f}
-              </button>
-            ))}
+          <div className="sticky top-[86px] z-20 -mx-6 md:-mx-10 px-6 md:px-10 py-2.5 bg-[#F8F9FA]/90 dark:bg-[#0C0C0C]/90 backdrop-blur-md border-b border-gray-200 dark:border-[#222222]">
+            <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-1">
+              <Filter className="w-4 h-4 text-gray-500 dark:text-[#A5A8A1] mr-2 shrink-0" />
+              {filters.map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setSelectedFilter(f)}
+                  className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+                    selectedFilter === f
+                      ? 'bg-[#E30613] text-white font-bold'
+                      : 'bg-white dark:bg-[#141414] text-gray-700 dark:text-[#A5A8A1] border border-gray-200 dark:border-[#222222] hover:text-gray-900 dark:hover:text-gray-900 dark:text-[#F3F4EF]'
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -177,10 +179,10 @@ export const WorkPage: React.FC = () => {
                     {p.industry}
                   </span>
                 </div>
-                <h3 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F3F4EF] mb-3 group-hover:translate-x-1 transition-transform">
+                <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-left leading-[1.08] tracking-[-0.04em] text-gray-900 dark:text-[#F3F4EF] mb-3 group-hover:translate-x-0.5 transition-transform break-words">
                   {p.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-[#A5A8A1] leading-relaxed mb-6">
+                <p className="text-left text-xs sm:text-sm text-gray-600 dark:text-[#A5A8A1] leading-relaxed mb-6">
                   {p.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">

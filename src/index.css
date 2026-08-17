@@ -60,6 +60,11 @@ html {
   transition: background-color 0.3s, color 0.3s;
 }
 
+.dark .footer-section {
+  background-color: #0c0c0c;
+  color: #f3f4ef;
+}
+
 .footer-wrapper {
   max-width: 1150px;
   margin: 0 auto;
@@ -213,6 +218,12 @@ html {
   position: relative;
 }
 
+.dark .footer-right {
+  background: #141414;
+  border-color: #222222;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
 .footer-lucky-graphic {
   position: absolute;
   top: -36px;
@@ -286,6 +297,10 @@ html {
   white-space: nowrap;
 }
 
+.dark .lucky-text {
+  color: #b5b9bf;
+}
+
 .footer-right-top {
   width: 100%;
 }
@@ -321,6 +336,11 @@ html {
   transition: color 0.2s, transform 0.15s;
 }
 
+.dark .footer-col button,
+.dark .footer-col a {
+  color: #f3f4ef;
+}
+
 .footer-col button:hover, .footer-col a:hover {
   color: #E30613;
   transform: translateX(2px);
@@ -341,6 +361,10 @@ html {
   color: #6b7280;
 }
 
+.dark .footer-copyright {
+  color: #a5a8a1;
+}
+
 .footer-cta-mini {
   display: flex;
   flex-direction: column;
@@ -354,11 +378,19 @@ html {
   line-height: 1.45;
 }
 
+.dark .footer-cta-mini h4 {
+  color: #c5c8c2;
+}
+
 .footer-cta-mini h4 strong {
   display: block;
   font-size: 19px;
   font-weight: 700;
   color: #111827;
+}
+
+.dark .footer-cta-mini h4 strong {
+  color: #f3f4ef;
 }
 
 .footer-subscribe-row {
@@ -371,6 +403,12 @@ html {
   padding: 5px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.04);
   transition: border-color 0.2s;
+}
+
+.dark .footer-subscribe-row {
+  background: #0f0f0f;
+  border-color: #222222;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
 }
 
 .footer-subscribe-row:focus-within {
@@ -388,8 +426,16 @@ html {
   color: #111827;
 }
 
+.dark .footer-subscribe-row input[type="email"] {
+  color: #f3f4ef;
+}
+
 .footer-subscribe-row input[type="email"]::placeholder {
   color: #9ca3af;
+}
+
+.dark .footer-subscribe-row input[type="email"]::placeholder {
+  color: #7d8389;
 }
 
 .footer-subscribe-row button[type="button"], .footer-subscribe-row button[type="submit"] {
@@ -436,6 +482,10 @@ html {
   fill: rgba(0, 0, 0, 0.04);
 }
 
+.dark .footer-watermark text {
+  fill: rgba(255, 255, 255, 0.05);
+}
+
 @media (max-width: 860px) {
   .footer-wrapper {
     grid-template-columns: 1fr;
@@ -472,5 +522,11 @@ html {
   }
   .lucky-cube-mark {
     font-size: 32px;
+  }
+  .footer-watermark {
+    margin-top: -18px;
+  }
+  .footer-watermark text {
+    font-size: 180px;
   }
 }

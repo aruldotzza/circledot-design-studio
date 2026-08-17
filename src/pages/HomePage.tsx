@@ -3,7 +3,7 @@ import { useNavigation } from '../context/NavigationContext';
 import { CircleDotSculpture } from '../components/CircleDotSculpture';
 import { CustomCursor } from '../components/CustomCursor';
 import { ArrowUpRight, ArrowDown, ArrowRight } from 'lucide-react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -135,31 +135,105 @@ interface WhyCardData {
   image: string;
 }
 
+const EASING: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const PixelOverlay: React.FC<{ isHovered: boolean }> = ({ isHovered }) => {
+  const rows = 8;
+  const cols = 12;
+  const blocks: JSX.Element[] = [];
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const delayIn = (r + c) * 0.018;
+      const delayOut = (8 - r + (12 - c)) * 0.012;
+
+      blocks.push(
+        <motion.div
+          key={`${r}-${c}`}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{
+            scale: isHovered ? 1 : 0,
+            opacity: isHovered ? 1 : 0,
+          }}
+          transition={{
+            duration: 0.25,
+            delay: isHovered ? delayIn : delayOut,
+            ease: EASING,
+          }}
+          style={{
+            left: `${c * (100 / 12)}%`,
+            top: `${r * (100 / 8)}%`,
+            width: `${100 / 12}%`,
+            height: `${100 / 8}%`,
+          }}
+          className="pointer-events-none absolute bg-black/80"
+        />
+      );
+    }
+  }
+
+  return <>{blocks}</>;
+};
+
+const MagneticSquare: React.FC<{
+  sq: { x: number; y: number; size: number };
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
+}> = ({ sq, mouseX, mouseY }) => {
+  const dx = useTransform(mouseX, [0, 1], [-(sq.x - 50) * 0.6, (sq.x - 50) * 0.6]);
+  const dy = useTransform(mouseY, [0, 1], [-(sq.y - 50) * 0.6, (sq.y - 50) * 0.6]);
+
+  const springX = useSpring(dx, { stiffness: 80, damping: 18, mass: 0.6 });
+  const springY = useSpring(dy, { stiffness: 80, damping: 18, mass: 0.6 });
+
+  return (
+    <motion.div
+      style={{
+        left: `${sq.x}%`,
+        top: `${sq.y}%`,
+        width: `${sq.size}px`,
+        height: `${sq.size}px`,
+        x: springX,
+        y: springY,
+      }}
+      className="pointer-events-none absolute z-10 bg-[#E50000] shadow-[0_0_8px_#E50000]"
+    />
+  );
+};
+
 const StackedWhyCard: React.FC<{
   card: WhyCardData;
   index: number;
   totalCards: number;
 }> = ({ card, index, totalCards }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
 
-  // Track scroll progress within the parent container
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  });
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width;
+    const py = (event.clientY - rect.top) / rect.height;
 
-  // Calculate target scale: first card stays at 1, each subsequent card scales down by 2%
-  const targetScale = 1 - (totalCards - 1 - index) * 0.02;
-  
-  // Calculate when this card should start scaling (cascade effect)
-  const cardStartRange = index / totalCards;
-  
-  // Map scroll progress to scale: at cardStartRange scroll position, start scaling
-  const scale = useTransform(
-    scrollYProgress,
-    [cardStartRange, 1],
-    [1, targetScale]
-  );
+    mouseX.set(px);
+    mouseY.set(py);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
+
+  const squares = [
+    { x: 12, y: 14, size: 20 },
+    { x: 28, y: 32, size: 24 },
+    { x: 67, y: 18, size: 22 },
+    { x: 76, y: 42, size: 28 },
+    { x: 58, y: 68, size: 18 },
+  ];
 
   return (
     <div
@@ -170,41 +244,52 @@ const StackedWhyCard: React.FC<{
       }}
     >
       <motion.div
-        style={{ scale }}
-        className="group relative w-full max-w-2xl rounded-3xl md:rounded-4xl bg-gray-50 dark:bg-[#141414] border border-gray-200 dark:border-[#222222] hover:border-[#E30613] dark:hover:border-[#E30613] transition-all p-8 md:p-12 flex flex-col gap-6 shadow-lg dark:shadow-2xl overflow-hidden"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{
+          duration: 0.7,
+          delay: index * 0.1,
+          ease: EASING,
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="group relative aspect-[4/3] w-full max-w-2xl overflow-hidden rounded-[28px] border border-white/10 bg-[#111315] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
       >
-        {/* Background Image */}
-        <div className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-500" style={{ backgroundImage: `url('${card.image}')` }}></div>
-        
-        {/* Background Glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E30613]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-3xl md:rounded-4xl"></div>
+        <img
+          src={card.image}
+          alt={card.title}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
 
-        {/* Card Number & Icon */}
-        <div className="relative z-10 flex items-start justify-between">
-          <span className="font-mono text-4xl md:text-5xl font-bold text-[#E30613]">
-            {card.num}
-          </span>
-          <span className="text-3xl md:text-4xl text-[#E30613]/40 group-hover:text-[#E30613] transition-colors">
-            {card.icon}
-          </span>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0C0C0C]/90 via-[#0C0C0C]/20 to-transparent" />
 
-        {/* Card Title */}
-        <div className="relative z-10">
-          <h3 className="font-display text-2xl md:text-3xl font-bold text-gray-900 dark:text-[#F3F4EF] group-hover:translate-x-2 transition-transform">
+        <PixelOverlay isHovered={isHovered} />
+
+        {squares.map((sq, sqIndex) => (
+          <MagneticSquare key={`${card.title}-${sqIndex}`} sq={sq} mouseX={mouseX} mouseY={mouseY} />
+        ))}
+
+        <button
+          type="button"
+          aria-label={`View ${card.title}`}
+          className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/30 text-xl font-medium text-white backdrop-blur-md transition-transform duration-300 hover:scale-105"
+        >
+          +
+        </button>
+
+        <div className="absolute bottom-0 left-0 z-20 max-w-[76%] rounded-tr-[20px] border border-white/10 bg-[#0C0C0C]/80 px-4 pb-4 pt-3 backdrop-blur-md shadow-2xl">
+          <span className="mb-1 block text-[10px] font-medium tracking-[0.24em] text-[#E50000] uppercase">
+            PILLAR // {card.num}
+          </span>
+          <h3 className="max-w-[18rem] text-xl font-black uppercase leading-[1.05] tracking-[-0.04em] text-white sm:text-2xl">
             {card.title}
           </h3>
-        </div>
-
-        {/* Card Description */}
-        <div className="relative z-10">
-          <p className="text-base md:text-lg text-gray-600 dark:text-[#A5A8A1] leading-relaxed font-light">
+          <p className="mt-1 max-w-[18rem] text-xs leading-5 text-[#D7E2EA]/80 sm:text-sm">
             {card.desc}
           </p>
         </div>
-
-        {/* Accent Line */}
-        <div className="relative z-10 h-1 w-12 bg-gradient-to-r from-[#E30613] to-[#E30613]/20 rounded-full group-hover:w-16 transition-all duration-300"></div>
       </motion.div>
     </div>
   );
@@ -485,16 +570,16 @@ export const HomePage: React.FC = () => {
               Whether you need a brand, product, website, growth strategy, automation, or simply don't know where to start — bring us the challenge. We'll help define the right next step.
             </p>
 
-            <div className="flex flex-wrap items-center gap-6 mb-12">
+            <div className="flex flex-col items-center gap-4 mb-12 sm:flex-row sm:justify-start sm:items-center sm:gap-6">
               <button
                 onClick={() => openEnquiryModal()}
-                className="px-7 py-3.5 rounded-full bg-[#E30613] text-white font-semibold text-xs tracking-wider uppercase hover:opacity-90 transition-opacity flex items-center gap-2 cursor-pointer shadow-lg shadow-[#E30613]/20"
+                className="w-full max-w-[220px] sm:max-w-none px-7 py-3.5 rounded-full bg-[#E30613] text-white font-semibold text-xs tracking-wider uppercase hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#E30613]/20"
               >
                 <span>Talk to Us</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              <span className="text-xs font-mono text-gray-600 dark:text-[#A5A8A1]">
+              <span className="text-center text-xs font-mono text-gray-600 dark:text-[#A5A8A1] sm:text-left">
                 Clear direction · Focused execution · One connected team
               </span>
             </div>
@@ -503,7 +588,10 @@ export const HomePage: React.FC = () => {
           {/* Animated Pillars Bar */}
           <div className="pt-12 grid grid-cols-2 sm:grid-cols-5 gap-4">
             {['BRAND', 'DESIGN', 'BUILD', 'LAUNCH', 'GROW'].map((word) => (
-              <div key={word} className="p-6 rounded-2xl bg-gray-50 dark:bg-[#141414] border border-gray-200 dark:border-[#222222] text-center group hover:border-[#E30613] transition-all">
+              <div
+                key={word}
+                className={`${word === 'GROW' ? 'col-span-2 sm:col-span-1' : ''} p-6 rounded-2xl bg-gray-50 dark:bg-[#141414] border border-gray-200 dark:border-[#222222] text-center group hover:border-[#E30613] transition-all`}
+              >
                 <span className="font-display text-lg sm:text-xl font-bold tracking-wider text-gray-900 dark:text-[#F3F4EF] group-hover:text-[#E30613] transition-colors">
                   {word}
                 </span>
@@ -529,17 +617,17 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Desktop GSAP Moving Track */}
-        <div className="hidden md:block w-full overflow-hidden my-auto">
-          <div ref={servicesTrackRef} className="flex gap-8 w-max pl-4 pr-12">
+        {/* GSAP Moving Track */}
+        <div className="w-full overflow-hidden my-auto">
+          <div ref={servicesTrackRef} className="flex gap-4 sm:gap-8 w-max pl-4 pr-12">
             {servicesList.map((service) => (
               <div
                 key={service.id}
-                className="group w-[450px] lg:w-[500px] bg-gray-50 dark:bg-[#141414] border border-gray-200 dark:border-[#222222] rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-[#E30613]/60 transition-all shrink-0 shadow-2xl"
+                className="group w-[82vw] sm:w-[450px] lg:w-[500px] bg-gray-50 dark:bg-[#141414] border border-gray-200 dark:border-[#222222] rounded-3xl p-5 sm:p-8 flex flex-col justify-between hover:border-[#E30613]/60 transition-all shrink-0 shadow-2xl"
               >
                 <div>
                   {/* Top Representation Image Banner */}
-                  <div className="w-full h-52 lg:h-60 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#222222] relative group-hover:border-[#E30613]/50 transition-colors mb-6">
+                  <div className="w-full h-44 sm:h-52 lg:h-60 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#222222] relative group-hover:border-[#E30613]/50 transition-colors mb-6">
                     <img
                       src={service.image}
                       alt={service.title}
@@ -553,18 +641,18 @@ export const HomePage: React.FC = () => {
 
                   {/* Card Title & Info */}
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-[#222222]">
-                    <span className="text-xs font-mono text-[#E30613] font-bold tracking-widest uppercase">
+                    <span className="text-[10px] sm:text-xs font-mono text-[#E30613] font-bold tracking-widest uppercase">
                       {service.title}
                     </span>
-                    <span className="text-[10px] font-mono text-gray-600 dark:text-[#A5A8A1]">
+                    <span className="text-[9px] sm:text-[10px] font-mono text-gray-600 dark:text-[#A5A8A1]">
                       SERVICE 0{service.number}
                     </span>
                   </div>
 
-                  <h3 className="font-display text-xl lg:text-2xl font-bold text-gray-900 dark:text-[#F3F4EF] mb-3">
+                  <h3 className="font-display text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-[#F3F4EF] mb-3">
                     {service.hook}
                   </h3>
-                  <p className="text-xs lg:text-sm text-gray-600 dark:text-[#A5A8A1] mb-6 leading-relaxed">
+                  <p className="text-[11px] sm:text-xs lg:text-sm text-gray-600 dark:text-[#A5A8A1] mb-6 leading-relaxed">
                     {service.description}
                   </p>
 
@@ -572,7 +660,7 @@ export const HomePage: React.FC = () => {
                     {service.pointers.map((p) => (
                       <span
                         key={p}
-                        className="px-3 py-1 rounded-lg bg-white dark:bg-[#0C0C0C] border border-gray-200 dark:border-[#222222] text-xs font-mono text-gray-700 dark:text-[#D7E2EA]"
+                        className="px-3 py-1 rounded-lg bg-white dark:bg-[#0C0C0C] border border-gray-200 dark:border-[#222222] text-[10px] sm:text-xs font-mono text-gray-700 dark:text-[#D7E2EA]"
                       >
                         {p}
                       </span>
@@ -582,7 +670,7 @@ export const HomePage: React.FC = () => {
 
                 <button
                   onClick={() => navigateTo(service.ctaPath)}
-                  className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#E30613] hover:underline cursor-pointer pt-2 border-t border-gray-200 dark:border-[#222222]"
+                  className="inline-flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-widest uppercase text-[#E30613] hover:underline cursor-pointer pt-2 border-t border-gray-200 dark:border-[#222222]"
                 >
                   <span>EXPLORE SERVICE</span>
                   <ArrowUpRight className="w-4 h-4" />
@@ -590,39 +678,6 @@ export const HomePage: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Mobile Vertical Stacked Cards */}
-        <div className="md:hidden flex flex-col gap-6 overflow-y-auto max-h-[65vh]">
-          {servicesList.map((service) => (
-            <div
-              key={service.id}
-              className="bg-gray-50 dark:bg-[#141414] border border-gray-200 dark:border-[#222222] rounded-2xl p-5 flex flex-col justify-between gap-4"
-            >
-              <div className="w-full h-40 rounded-xl overflow-hidden border border-gray-200 dark:border-[#222222]">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-[#222222]">
-                  <span className="font-mono text-base font-bold text-[#E30613]">{service.number}</span>
-                  <span className="text-[10px] font-mono text-gray-600 dark:text-[#A5A8A1]">{service.title}</span>
-                </div>
-                <h3 className="font-display text-lg font-bold text-gray-900 dark:text-[#F3F4EF] mb-2">{service.hook}</h3>
-                <p className="text-xs text-gray-600 dark:text-[#A5A8A1] mb-3">{service.description}</p>
-              </div>
-              <button
-                onClick={() => navigateTo(service.ctaPath)}
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#E30613]"
-              >
-                <span>Explore Service</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -674,21 +729,21 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 05. CASE STUDIES SECTION (STACKING CARDS EFFECT) */}
-      <section id="case-studies" className="py-16 px-6 md:px-10 bg-white dark:bg-[#0C0C0C] relative">
-        <div className="max-w-7xl mx-auto">
+      <section id="case-studies" className="py-16 px-0 md:px-10 bg-white dark:bg-[#0C0C0C] relative">
+        <div className="max-w-7xl mx-auto px-6 md:px-0">
           
           {/* Sticky Section Header - Available on screen throughout scrolling animation */}
-          <div className="sticky top-20 z-30 bg-white/90 dark:bg-[#0C0C0C]/90 backdrop-blur-md py-4 mb-6 border-b border-gray-200/50 dark:border-[#222222]/50 transition-colors">
+          <div className="sticky top-16 md:top-20 z-30 bg-white/90 dark:bg-[#0C0C0C]/90 backdrop-blur-md py-4 md:py-4 mb-6 border-b border-gray-200/50 dark:border-[#222222]/50 transition-colors -mx-6 md:mx-0 px-6 md:px-0">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div>
                 <span className="text-xs font-mono tracking-widest text-[#E30613] uppercase block mb-2 font-bold">
                   CASE STUDIES
                 </span>
-                <h2 className="font-display text-2xl sm:text-4xl font-bold text-gray-900 dark:text-[#F3F4EF] tracking-tight">
+                <h2 className="font-display text-2xl sm:text-4xl font-bold text-gray-900 dark:text-[#F3F4EF] tracking-tight leading-[0.95]">
                   Case studies built around real business needs.
                 </h2>
               </div>
-              <p className="text-xs font-mono text-gray-500 dark:text-[#A5A8A1] uppercase tracking-wider">
+              <p className="text-[10px] sm:text-xs font-mono text-gray-500 dark:text-[#A5A8A1] uppercase tracking-wider">
                 Concept Work Honest Showcase · Interactive Stacking Showcase
               </p>
             </div>
@@ -764,37 +819,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 07. CUSTOMER EXPERIENCE SECTION */}
-      <section className="py-24 px-6 md:px-10 bg-white dark:bg-[#0C0C0C]">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-16">
-            <span className="text-xs font-mono tracking-widest text-[#E30613] uppercase block mb-3">
-              THE CIRCLE DOT EXPERIENCE
-            </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold text-gray-900 dark:text-[#F3F4EF] tracking-tight">
-              Good design is only part of the experience.
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { num: '01', title: 'CLEAR FROM DAY ONE', subtitle: 'No unnecessary complexity.', desc: 'We start with what you\'re trying to achieve, not just what you think you need designed.' },
-              { num: '02', title: 'ONE CONNECTED DIRECTION', subtitle: 'Everything works together.', desc: 'Brand, product, website, content and development follow the same design logic.' },
-              { num: '03', title: 'FAST, WITHOUT RUSHING', subtitle: 'Move quickly. Make smart decisions.', desc: 'Focused iterations, clear communication and reusable systems keep projects moving.' },
-              { num: '04', title: 'BUILT FOR REAL USE', subtitle: 'Beautiful isn\'t enough.', desc: 'We design for real users, real devices, real businesses and real-world constraints.' },
-              { num: '05', title: 'SUPPORT BEYOND LAUNCH', subtitle: 'Launch is a milestone, not the finish line.', desc: 'Continue improving, optimizing and evolving as your business changes.' },
-            ].map((exp) => (
-              <div key={exp.num} className="p-8 rounded-3xl bg-gray-50 dark:bg-[#141414] border border-gray-200 dark:border-[#222222]">
-                <span className="text-xs font-mono text-[#E30613] block mb-2">{exp.num} — {exp.title}</span>
-                <h4 className="font-display font-bold text-lg text-gray-900 dark:text-[#F3F4EF] mb-2">{exp.subtitle}</h4>
-                <p className="text-xs text-gray-600 dark:text-[#A5A8A1] leading-relaxed">{exp.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 08. WHY WORK WITH US - STACKED CARD SCROLL ANIMATION */}
+      {/* 07. WHY WORK WITH US - STACKED CARD SCROLL ANIMATION */}
       <section className="bg-white dark:bg-[#0C0C0C] overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 md:px-10 py-20">
           <div className="mb-12">
