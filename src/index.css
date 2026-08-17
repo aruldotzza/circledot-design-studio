@@ -96,6 +96,7 @@ html {
   z-index: 0;
   pointer-events: none;
   opacity: 0.85;
+  filter: hue-rotate(140deg) saturate(1.5);
 }
 
 .footer-logo {

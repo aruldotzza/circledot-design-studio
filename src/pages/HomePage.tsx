@@ -197,7 +197,7 @@ const MagneticSquare: React.FC<{
         x: springX,
         y: springY,
       }}
-      className="pointer-events-none absolute z-10 bg-[#E50000] shadow-[0_0_8px_#E50000]"
+      className="pointer-events-none absolute z-10 bg-[#E50000] shadow-[0_0_8px_#E50000] rounded-full"
     />
   );
 };
@@ -574,13 +574,13 @@ export const HomePage: React.FC = () => {
             <div className="flex flex-col items-center gap-4 mb-12 sm:flex-row sm:justify-start sm:items-center sm:gap-6">
               <button
                 onClick={() => openEnquiryModal()}
-                className="w-full max-w-[220px] sm:max-w-none px-7 py-3.5 rounded-full bg-[#E30613] text-white font-semibold text-xs tracking-wider uppercase hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#E30613]/20"
+                className="w-full sm:w-auto max-w-[220px] sm:max-w-none px-7 py-3.5 rounded-full bg-[#E30613] text-white font-semibold text-xs tracking-wider uppercase hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#E30613]/20"
               >
                 <span>Talk to Us</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              <span className="text-center text-xs font-mono text-gray-600 dark:text-[#A5A8A1] sm:text-left">
+              <span className="text-center text-xs font-mono text-gray-600 dark:text-[#A5A8A1] sm:text-left whitespace-nowrap">
                 Clear direction · Focused execution · One connected team
               </span>
             </div>
@@ -619,7 +619,7 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* GSAP Moving Track */}
-        <div className="w-full overflow-hidden my-auto">
+        <div className="w-full overflow-visible my-auto py-8">
           <div ref={servicesTrackRef} className="flex gap-4 sm:gap-8 w-max pl-4 pr-12">
             {servicesList.map((service) => (
               <div

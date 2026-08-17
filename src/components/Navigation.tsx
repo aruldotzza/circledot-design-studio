@@ -40,7 +40,7 @@ export const Navigation: React.FC = () => {
             className="flex items-center gap-3 group cursor-pointer py-1"
           >
             <img
-              src="/Logo/Logo mockup.png"
+              src={isDark ? "/Logo/Circledot logo-1.png" : "/Logo/Circledot logo-2.png"}
               alt="Circle Dot Design Studio"
               className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-transform group-hover:scale-105"
             />

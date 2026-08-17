@@ -57,7 +57,7 @@ export const Footer: React.FC = () => {
 
             <div className="footer-logo">
               <img 
-                src="/Logo/Logo mockup.png" 
+                src={isDark ? "/Logo/Circledot logo-1.png" : "/Logo/Circledot logo-2.png"}
                 alt="Circle Dot" 
                 className="h-8 sm:h-9 w-auto object-contain brightness-0 invert" 
               />
