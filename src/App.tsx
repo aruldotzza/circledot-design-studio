@@ -9,14 +9,14 @@ import { PageLoader } from './components/PageLoader';
 const EnquiryModal = React.lazy(() => import('./components/EnquiryModal').then(module => ({ default: module.EnquiryModal })));
 
 // Pages
-const HomePage = React.lazy(() => import('./pages/HomePage').then(module => ({ default: module.HomePage })));
+import { HomePage } from './pages/HomePage';
 const AboutPage = React.lazy(() => import('./pages/AboutPage').then(module => ({ default: module.AboutPage })));
 const HowWeWorkPage = React.lazy(() => import('./pages/HowWeWorkPage').then(module => ({ default: module.HowWeWorkPage })));
 const WorkPage = React.lazy(() => import('./pages/WorkPage').then(module => ({ default: module.WorkPage })));
 const ServicesPage = React.lazy(() => import('./pages/ServicesPage').then(module => ({ default: module.ServicesPage })));
 const ServiceDetailPage = React.lazy(() => import('./pages/ServiceDetailPage').then(module => ({ default: module.ServiceDetailPage })));
 
-const SITE_URL = 'https://www.circledot.design';
+const SITE_URL = 'https://www.circledotdesign.in';
 
 const routeMetadata: Record<string, { title: string; description: string; keywords: string; type?: string }> = {
   '/': {
