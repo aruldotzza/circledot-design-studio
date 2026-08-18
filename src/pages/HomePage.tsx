@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigation } from '../context/NavigationContext';
-import { CircleDotSculpture } from '../components/CircleDotSculpture';
 import { CustomCursor } from '../components/CustomCursor';
 import { LazyImage } from '../components/LazyImage';
+
+const CircleDotSculpture = React.lazy(() => import('../components/CircleDotSculpture').then(module => ({ default: module.CircleDotSculpture })));
 import { ArrowUpRight, ArrowDown, ArrowRight } from 'lucide-react';
 import { motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { gsap } from 'gsap';
@@ -472,7 +473,9 @@ export const HomePage: React.FC = () => {
       <section className="relative min-h-[92vh] flex flex-col justify-between pt-32 pb-16 px-6 md:px-10 overflow-hidden">
         {/* Background 3D Canvas Container */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-20 dark:opacity-80 transition-opacity duration-700">
-          <CircleDotSculpture />
+          <React.Suspense fallback={null}>
+            <CircleDotSculpture />
+          </React.Suspense>
         </div>
 
         {/* Ambient Top Glow */}

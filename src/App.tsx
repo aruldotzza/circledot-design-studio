@@ -2,16 +2,19 @@ import React, { useEffect } from 'react';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Navigation } from './components/Navigation';
-import { EnquiryModal } from './components/EnquiryModal';
 import { Footer } from './components/Footer';
+import { PageLoader } from './components/PageLoader';
+
+// Lazy load components that are not immediately visible
+const EnquiryModal = React.lazy(() => import('./components/EnquiryModal').then(module => ({ default: module.EnquiryModal })));
 
 // Pages
-import { HomePage } from './pages/HomePage';
-import { AboutPage } from './pages/AboutPage';
-import { HowWeWorkPage } from './pages/HowWeWorkPage';
-import { WorkPage } from './pages/WorkPage';
-import { ServicesPage } from './pages/ServicesPage';
-import { ServiceDetailPage } from './pages/ServiceDetailPage';
+const HomePage = React.lazy(() => import('./pages/HomePage').then(module => ({ default: module.HomePage })));
+const AboutPage = React.lazy(() => import('./pages/AboutPage').then(module => ({ default: module.AboutPage })));
+const HowWeWorkPage = React.lazy(() => import('./pages/HowWeWorkPage').then(module => ({ default: module.HowWeWorkPage })));
+const WorkPage = React.lazy(() => import('./pages/WorkPage').then(module => ({ default: module.WorkPage })));
+const ServicesPage = React.lazy(() => import('./pages/ServicesPage').then(module => ({ default: module.ServicesPage })));
+const ServiceDetailPage = React.lazy(() => import('./pages/ServiceDetailPage').then(module => ({ default: module.ServiceDetailPage })));
 
 const SITE_URL = 'https://www.circledot.design';
 
@@ -234,9 +237,15 @@ const MainRouter: React.FC = () => {
   return (
     <div className="bg-white text-gray-900 min-h-screen font-sans overflow-x-clip transition-colors duration-300">
       <Navigation />
-      <main>{renderContent()}</main>
+      <main>
+        <React.Suspense fallback={<PageLoader />}>
+          {renderContent()}
+        </React.Suspense>
+      </main>
       <Footer />
-      <EnquiryModal />
+      <React.Suspense fallback={null}>
+        <EnquiryModal />
+      </React.Suspense>
     </div>
   );
 };
