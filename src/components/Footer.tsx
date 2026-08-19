@@ -35,12 +35,32 @@ export const Footer: React.FC = () => {
     return () => window.removeEventListener('resize', fitWatermark);
   }, []);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email.trim()) {
-      setSubscribed(true);
-      setEmail('');
-      setTimeout(() => setSubscribed(false), 3000);
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            access_key: import.meta.env.VITE_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY',
+            subject: 'New Newsletter Subscription',
+            email: email,
+            message: `${email} has subscribed to the newsletter.`,
+          }),
+        });
+
+        if (response.ok) {
+          setSubscribed(true);
+          setEmail('');
+          setTimeout(() => setSubscribed(false), 3000);
+        }
+      } catch (error) {
+        console.error('Subscription error:', error);
+      }
     }
   };
 
@@ -172,7 +192,7 @@ export const Footer: React.FC = () => {
                 <div className="footer-col">
                   <div className="footer-col-title">Company</div>
                   <button onClick={() => navigateTo('/about')}>About Us</button>
-                  <a href="mailto:hello@circledot.design">hello@circledot.design</a>
+                  <a href="mailto:hello@circledotdesign.in">hello@circledotdesign.in</a>
                   <button onClick={() => openEnquiryModal()}>Get in Touch</button>
                 </div>
               </div>

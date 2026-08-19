@@ -1,20 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigation } from '../context/NavigationContext';
 import { X, ArrowRight, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import emailjs from '@emailjs/browser';
-
-// ─── EmailJS Configuration ──────────────────────────────────────────────────
-// 1. Go to https://www.emailjs.com/ and create a free account
-// 2. Add an Email Service (e.g., Gmail) → copy the Service ID below
-// 3. Create an Email Template with these variables:
-//      {{from_name}}, {{from_email}}, {{phone}}, {{company}}, {{website}},
-//      {{looking_to_build}}, {{current_stage}}, {{description}}
-//    Set "To Email" to: arul.dotzza@gmail.com
-// 4. Copy the Template ID and Public Key below
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz789'
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';    // e.g. 'abcDEF123...'
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const EnquiryModal: React.FC = () => {
   const { isEnquiryModalOpen, closeEnquiryModal, preselectedCategory } = useNavigation();
@@ -70,44 +56,41 @@ export const EnquiryModal: React.FC = () => {
     setIsSending(true);
     setSendError(null);
 
-    const templateParams = {
-      to_email: 'arul.dotzza@gmail.com',
-      from_name: name,
-      from_email: email,
-      phone: phone,
-      company: company || 'Not provided',
-      website: website || 'Not provided',
-      looking_to_build: lookingToBuild || 'Not specified',
-      current_stage: currentStage || 'Not specified',
-      description: description || 'Not provided',
-    };
-
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams,
-        EMAILJS_PUBLIC_KEY
-      );
-      setIsSubmitted(true);
-    } catch (error) {
-      console.error('EmailJS error:', error);
-      // If EmailJS isn't configured yet, fall back to mailto
-      if (
-        EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID' ||
-        EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID' ||
-        EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY'
-      ) {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: import.meta.env.VITE_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY',
+          subject: `New Project Enquiry from ${name} — ${lookingToBuild}`,
+          from_name: name,
+          email: email,
+          phone: phone,
+          company: company || 'Not provided',
+          website: website || 'Not provided',
+          looking_to_build: lookingToBuild || 'Not specified',
+          current_stage: currentStage || 'Not specified',
+          message: description || 'Not provided',
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
         // Fallback: open user's mail client with pre-filled email
         const subject = encodeURIComponent(`New Project Enquiry from ${name} — ${lookingToBuild}`);
         const body = encodeURIComponent(
           `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nCompany: ${company || 'N/A'}\nWebsite: ${website || 'N/A'}\n\nLooking to Build: ${lookingToBuild}\nCurrent Stage: ${currentStage}\n\nProject Description:\n${description}`
         );
-        window.open(`mailto:arul.dotzza@gmail.com?subject=${subject}&body=${body}`);
+        window.open(`mailto:hello@circledotdesign.in?subject=${subject}&body=${body}`);
         setIsSubmitted(true);
-      } else {
-        setSendError('Failed to send. Please try again or email us directly at arul.dotzza@gmail.com');
       }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSendError('Failed to send. Please try again or email us directly at hello@circledotdesign.in');
     } finally {
       setIsSending(false);
     }

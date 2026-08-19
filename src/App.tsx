@@ -198,7 +198,7 @@ const MainRouter: React.FC = () => {
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer service',
-        email: 'hello@circledot.design',
+        email: 'hello@circledotdesign.in',
       },
     };
 
