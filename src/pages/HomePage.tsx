@@ -240,10 +240,7 @@ const StackedWhyCard: React.FC<{
   return (
     <div
       ref={containerRef}
-      className="min-h-[85vh] flex items-start justify-center sticky"
-      style={{
-        top: `${24 + index * 24}px`,
-      }}
+      className="flex items-start justify-center w-full"
     >
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -300,6 +297,14 @@ const StackedWhyCard: React.FC<{
 export const HomePage: React.FC = () => {
   const { navigateTo, openEnquiryModal } = useNavigation();
   const [hoveredProject, setHoveredProject] = useState<{ category: string; services: string[] } | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // GSAP ScrollTrigger Setup for Services Section
   const servicesSectionRef = useRef<HTMLDivElement>(null);
@@ -473,9 +478,11 @@ export const HomePage: React.FC = () => {
       <section className="relative min-h-[92vh] flex flex-col justify-between pt-32 pb-16 px-6 md:px-10 overflow-hidden">
         {/* Background 3D Canvas Container */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-20 dark:opacity-80 transition-opacity duration-700">
-          <React.Suspense fallback={null}>
-            <CircleDotSculpture />
-          </React.Suspense>
+          {!isMobile && (
+            <React.Suspense fallback={null}>
+              <CircleDotSculpture />
+            </React.Suspense>
+          )}
         </div>
 
         {/* Ambient Top Glow */}

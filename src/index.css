@@ -480,11 +480,11 @@ html {
   font-family: 'DM Sans', sans-serif;
   font-weight: 700;
   letter-spacing: -0.03em;
-  fill: rgba(0, 0, 0, 0.04);
+  fill: rgba(227, 6, 19, 0.05); /* Light red watermark */
 }
 
 .dark .footer-watermark text {
-  fill: rgba(255, 255, 255, 0.05);
+  fill: rgba(227, 6, 19, 0.08); /* Red watermark for dark mode */
 }
 
 @media (max-width: 860px) {
