@@ -52,4 +52,4 @@ export default defineConfig(({ command }) => ({
       '@react-three/drei',
     ],
   },
-});
+}));
